@@ -1,0 +1,387 @@
+@(rate:Float, RARate:Float,PaintRate:Float,MidLeftRate:Float,
+        MidRightRate:Float,MidCenterRate:Float,MidCenterLeftRate:Float,
+        MidCenterRightRate:Float,LeftCornerThreePTRate:Float,
+        RightCornerThreePTRate:Float,CenterLeftThreePTRate:Float,
+        CenterRightThreePTRate:Float,CenterThreePTRate:Float)
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style type="text/css">
+	body {
+        padding-left: 280px;
+    }
+    #pname {
+        font-size: 30px;
+    }
+    h2 {
+        padding-left: 380px;
+    }
+    #playground {
+        width: 500px;
+    }
+    #selectContent > #go {
+        margin-left: 100px;
+        margin-bottom: 10px;
+        width: 35px;
+        position: absolute;
+        cursor: pointer;
+    }
+    #selectContent > #back {
+        width: 50px;
+        margin-top: 20px;
+        margin-left: 350px;
+        position: absolute;
+        cursor: pointer;
+    }
+    #selectContent {
+        font-size: 25px;
+    }
+	</style>
+        <title>Basketball Strategy Board</title>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <h2>NBA Analytics</h2>
+    </head>
+
+    <body>
+        <p id="selectContent">Shot Type
+            <select id="shottype">
+                <option value="All">All Shot</option>
+                <option value="Made">Made Shot</option>
+                <option value="Missed">Missed Shot</option>
+            </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                Period
+            <select id="period">
+                <option value="All">All</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                Season
+            <select id="season">
+                <option value="2016-17">2016-17</option>
+                <option value="2015-16">2015-16</option>
+                <option value="2014-15">2014-15</option>
+                <option value="2013-14">2013-14</option>
+                <option value="2012-13">2012-13</option>
+                <option value="2011-12">2011-12</option>
+                <option value="2010-11">2010-11</option>
+                <option value="2009-10">2009-10</option>
+                <option value="2008-09">2008-09</option>
+                <option value="2007-08">2007-08</option>
+                <option value="2006-07">2006-07</option>
+                <option value="2005-06">2005-06</option>
+            </select>
+            <img id="go" src="go.png" onclick="change()">
+            <img id="back" src="main.png" onclick="goBack()">
+        </p>
+
+        <p id="pname"></p>
+        <img id="playground" style="display: none;" src="/assets/images/playground.png">
+
+        <svg width = 940 height="500">
+            <image xlink:href="/assets/images/playground.png"/>
+            <!--left corner-->
+            <path id="LeftCornerThreePT" d="M4 4 h 136 v 24 h -136 Z" />
+            <!--left side-->
+            <path id="MidLeft" d="M4 32 h 136 v 136 h -136 Z" />
+            <!--left middle-->
+            <path id="MidCenterLeft" d="M144 32 A 235 235 0 0 1 274 168 H 144 Z" />
+            <!--left center 3Pt-->
+            <path id="CenterLeftThreePT" d="M144 4 h 200 v 164 h -66 A 239 239 0 0 0 144 28 Z" />
+            <!--Mid center-->
+            <path id="MidCenter" d="M194 172 v 156 H 276 A 235 235 0 0 0 276 172 Z" />
+            <!--center 3Pt-->
+            <path id="CenterThreePT" d="M344 172 v 156 H 280 A 239 239 0 0 0 280 172 Z" />
+            <!--in paint-->
+            <path id="Paint" d="M4 172 h 186 v 156 h -186 v -156 Z" />
+            <!--Restricted-->
+            <path id="RA" d="M40 206 h 12.5 A 44 44 0 0 1 52.5 294 h -12.5 Z"/>
+            <!--right center 3Pt-->
+            <path id="CenterRightThreePT" d="M144 496 h 200 v -164 h -66 A 239 239 0 0 1 144 472 Z" />
+            <!--right middle-->
+            <path id="MidCenterRight" d="M144 468 A 235 235 0 0 0 274 332 H 144 Z" />
+            <!--right side-->
+            <path id="MidRight" d="M4 468 h 136 v -136 h -136 Z"/>
+            <!--right corner-->
+            <path id="RightCornerThreePT" d="M4 496 h 136 v -24 h -136 Z"/>
+
+        </svg>
+
+        <script>
+
+// to write the message to the strategy board
+
+window.onload = function(){
+    // corners
+    if(@LeftCornerThreePTRate>0.5) {
+        var aa = (@LeftCornerThreePTRate - 0.5)*1.6;
+        document.getElementById("LeftCornerThreePT").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @LeftCornerThreePTRate)*1.6;
+        document.getElementById("LeftCornerThreePT").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    if(@RightCornerThreePTRate>0.5) {
+        var aa = (@RightCornerThreePTRate - 0.5)*1.6;
+        document.getElementById("RightCornerThreePT").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @RightCornerThreePTRate)*1.6;
+        document.getElementById("RightCornerThreePT").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    // mid left / right
+    if(@MidLeftRate>0.5) {
+        var aa = (@MidLeftRate - 0.5)*1.6;
+        document.getElementById("MidLeft").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @MidLeftRate)*1.6;
+        document.getElementById("MidLeft").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    if(@MidRightRate>0.5) {
+        var aa = (@MidRightRate - 0.5)*1.6;
+        document.getElementById("MidRight").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @MidRightRate)*1.6;
+        document.getElementById("MidRight").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    // mid center left/right
+    if(@MidCenterLeftRate>0.5) {
+        var aa = (@MidCenterLeftRate - 0.5)*1.6;
+        document.getElementById("MidCenterLeft").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @MidCenterLeftRate)*1.6;
+        document.getElementById("MidCenterLeft").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+    if(@MidCenterRightRate>0.5) {
+        var aa = (@MidCenterRightRate - 0.5)*1.6;
+        document.getElementById("MidCenterRight").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @MidCenterRightRate)*1.6;
+        document.getElementById("MidCenterRight").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    // three point center left/right
+    if(@CenterLeftThreePTRate>0.5) {
+        var aa = (@CenterLeftThreePTRate - 0.5)*1.6;
+        document.getElementById("CenterLeftThreePT").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @CenterLeftThreePTRate)*1.6;
+        document.getElementById("CenterLeftThreePT").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+    if(@CenterRightThreePTRate>0.5) {
+        var aa = (@CenterRightThreePTRate - 0.5)*1.6;
+        document.getElementById("CenterRightThreePT").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @CenterRightThreePTRate)*1.6;
+        document.getElementById("CenterRightThreePT").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    if(@MidCenterRate > 0.5) {
+        var aa = (@MidCenterRate - 0.5)*1.6;
+        document.getElementById("MidCenter").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @MidCenterRate)*1.6;
+        document.getElementById("MidCenter").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    if(@CenterThreePTRate>0.5) {
+        var aa = (@CenterThreePTRate - 0.5)*1.6;
+        document.getElementById("CenterThreePT").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @CenterThreePTRate)*1.6;
+        document.getElementById("CenterThreePT").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    if(@PaintRate>0.5) {
+        var aa = (@PaintRate - 0.5)*1.6;
+        document.getElementById("Paint").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @PaintRate)*1.6;
+        document.getElementById("Paint").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    if(@RARate>0.5) {
+        var aa = (@RARate - 0.5)*1.6;
+        document.getElementById("RA").style.fill = "rgba(255,0,0,"+aa+")";
+    } else {
+        var aa = (0.5 - @RARate)*1.6;
+        document.getElementById("RA").style.fill = "rgba(0,0,255,"+aa+")";
+    }
+
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    var img = document.getElementById("playground");
+    ctx.drawImage(img, 0, 0);
+    var id = urlParameter("id");
+    var name = urlParameter("name");
+    var shottype = urlParameter("shottype");
+    var period = urlParameter("period");
+    var season = urlParameter("season");
+
+    $("#shottype").val(shottype);
+    $("#period").val(period);
+    $("#season").val(season);
+
+    if(shottype == "All"){
+        shottype = "All Shot";
+    }else if(shottype == "Made"){
+        shottype = "Made Shot";
+    }else if(shottype == "Missed"){
+        shottype = "Missed Shot";
+    }
+
+    if(period == "All"){
+        period = 0;
+    }
+
+    var pname = document.getElementById("pname");
+    name = name.replace("_"," ");
+    name = name.replace("|","'");
+    pname.innerHTML= name;
+
+    if(false){
+        $.ajax({
+            type:"GET",
+            url:"/assets/data/CurryFinalDatatest.csv",
+
+            success: function(result){
+                //.....
+                debugger;
+                var lines = result.split('\n');
+                var i;
+                for(i = 0; i < lines.length; i++) {
+                    var line = lines[i];
+                    var args = line.split(',');
+                    var x = Number(args[19]);
+                    var y = Number(args[20]);
+                    if(x>47) {
+                        x = 94-x;
+                        y = 50-y;
+                    }
+
+                    var area = args[15];
+                    var leftright = args[16];
+
+                    ctx.beginPath();
+                    ctx.arc(x*10,y*10,10,0,2*Math.PI);
+                    if(area == "Restricted Area"){
+                        ctx.fillStyle = "rgba(255, 0, 0, 0.35)";
+                    } else if(area == "In The Paint (Non-RA)"){
+                        ctx.fillStyle = "rgba(255, 128, 0, 0.35)";
+                    } else if(area == "Mid-Range") {
+                        if(leftright == "Left Side(L)") {
+                            ctx.fillStyle = "rgba(0, 128, 0, 0.35)";
+                        } else if(leftright == "Right Side(R)") {
+                            ctx.fillStyle = "rgba(0, 255, 255, 0.35)";
+                        } else if(leftright == "Left Side Center(LC)"){
+                            ctx.fillStyle = "rgba(255, 255, 0, 0.35)";
+                        } else if(leftright == "Right Side Center(RC)"){
+                            ctx.fillStyle = "rgba(182, 0, 128, 0.55)";
+                        } else {
+                            ctx.fillStyle = "rgba(0, 255, 0, 0.35)";
+                        }
+                    } else if(area == "Above the Break 3") {
+                        if(leftright == "Left Side Center(LC)"){
+                            ctx.fillStyle = "rgba(255, 128, 128, 0.35)";
+                        } else if(leftright == "Right Side Center(RC)"){
+                            ctx.fillStyle = "rgba(64, 128, 128, 0.55)";
+                        } else {
+                            ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+                        }
+                    } else if(area == "Right Corner 3") {
+                        ctx.fillStyle = "rgba(0, 0, 255, 0.35)";
+                    } else if(area == "Left Corner 3") {
+                        ctx.fillStyle = "rgba(255, 0, 255, 0.35)";
+                    }
+                    ctx.fillStyle = "rgba(0,0,0,0,1)"
+                    ctx.fill();
+                }
+                /*
+                 for(i = 0; i < result.resultSets[0].rowSet.length; i++){
+                 if(result.resultSets[0].rowSet[i][10] == shottype || shottype == "All Shot"){
+                 var x = result.resultSets[0].rowSet[i][17] + 0;
+                 x = x*10;
+                 var y = result.resultSets[0].rowSet[i][18] + 10;
+                 y = y*10;
+                 var area = result.resultSets[0].rowSet[i][13];
+                 var leftright = result.resultSets[0].rowSet[i][14];
+                 debugger;
+                 ctx.beginPath();
+                 ctx.arc(y,x,10,0,2*Math.PI);
+                 if(area == "Restricted Area"){
+                 ctx.fillStyle = "rgba(255, 0, 0, 0.35)";
+                 } else if(area == "In The Paint (Non-RA)"){
+                 ctx.fillStyle = "rgba(255, 128, 0, 0.35)";
+                 } else if(area == "Mid-Range") {
+                 if(leftright == "Left Side(L)") {
+                 ctx.fillStyle = "rgba(0, 128, 0, 0.35)";
+                 } else if(leftright == "Right Side(R)") {
+                 ctx.fillStyle = "rgba(0, 255, 255, 0.35)";
+                 } else if(leftright == "Left Side Center(LC)"){
+                 ctx.fillStyle = "rgba(255, 255, 0, 0.35)";
+                 } else if(leftright == "Right Side Center(RC)"){
+                 ctx.fillStyle = "rgba(182, 0, 128, 0.55)";
+                 } else {
+                 ctx.fillStyle = "rgba(0, 255, 0, 0.35)";
+                 }
+                 } else if(area == "Above the Break 3") {
+                 if(leftright == "Left Side Center(LC)"){
+                 ctx.fillStyle = "rgba(255, 128, 128, 0.35)";
+                 } else if(leftright == "Right Side Center(RC)"){
+                 ctx.fillStyle = "rgba(64, 128, 128, 0.55)";
+                 } else {
+                 ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+                 }
+                 } else if(area == "Right Corner 3") {
+                 ctx.fillStyle = "rgba(0, 0, 255, 0.35)";
+                 } else if(area == "Left Corner 3") {
+                 ctx.fillStyle = "rgba(255, 0, 255, 0.35)";
+                 }
+                 ctx.fill();
+                 }
+                 }*/
+            }
+        });
+    }
+}
+
+// to get the parameter from url
+function urlParameter(val){
+    var results = new RegExp('[\\?&]' + val + '=([^&#]*)').exec(window.location.href);
+    if(results == null){
+        return null;
+    }else{
+        return results[1] || 0;
+    }
+}
+
+// to go to the same page based on the new parameters
+function change(){
+    var shottype = document.getElementById("shottype").value;
+    var period = document.getElementById("period").value;
+    var season = document.getElementById("season").value;
+    var id = urlParameter("id");
+    var name = urlParameter("name");
+    window.location.href = "shots.html?id=" + id + "&name=" + name + "&shottype=" + shottype + "&period=" + period + "&season=" + season;
+    debugger;
+}
+
+function goBack(){
+    window.location.href = "index.html";
+}
+
+function draw(rate, id, ){
+
+}
+
+</script>
+
+
+    </body>
+</html>
